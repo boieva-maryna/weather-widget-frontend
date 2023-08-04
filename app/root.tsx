@@ -1,31 +1,17 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction } from "@remix-run/node";
-import {
-  Form,
-  Outlet,
-  isRouteErrorResponse,
-  useRouteError,
-  useSearchParams,
-} from "@remix-run/react";
+import { Outlet, isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import Document from "./components/Document";
 
+import stylesheet from "./tailwind.css";
+import Alert from "./components/Alert";
+
 export const links: LinksFunction = () => [
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: stylesheet },
 ];
 
 export default function App() {
-  const [params] = useSearchParams();
-
   return (
     <Document>
-      <Form method="get">
-        <input
-          type="text"
-          name="city"
-          defaultValue={params.get("city") || ""}
-        />
-        <button type="submit">Search</button>
-      </Form>
       <Outlet />
     </Document>
   );
@@ -37,24 +23,27 @@ export function ErrorBoundary() {
   const renderDetails = () => {
     if (isRouteErrorResponse(error)) {
       return (
-        <div>
-          <h1>
-            {error.status} {error.statusText}
-          </h1>
-          <p>{error.data}</p>
-        </div>
+        <Alert
+          title={`${error.status} ${error.statusText}`}
+          detalils={error.data}
+        />
       );
     } else if (error instanceof Error) {
       return (
-        <div>
-          <h1>Error</h1>
-          <p>{error.message}</p>
-          <p>The stack trace is:</p>
-          <pre>{error.stack}</pre>
-        </div>
+        <Alert
+          type="error"
+          title="Error"
+          detalils={
+            <>
+              <p>{error.message}</p>
+              <p>The stack trace is:</p>
+              <pre className="overflow-auto">{error.stack}</pre>
+            </>
+          }
+        />
       );
     } else {
-      return <h1>Unknown Error</h1>;
+      return <Alert type="error" title="Unknown error" />;
     }
   };
 
