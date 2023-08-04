@@ -12,6 +12,14 @@ npm run dev
 
 This starts your app in development mode, rebuilding assets on file changes.
 
+## .env
+
+Create .env with the following content:
+
+```
+BACKEND_API="http://your.backend:5000"
+```
+
 ## Deployment
 
 First, build your app for production:
